@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSE MCP Test Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .connecting {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .error {
+            color: #dc3545;
+        }
+
+        .success {
+            color: #28a745;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>SSE MCP Test Client</h1>
+
+        <div id="status" class="status disconnected">
+            Status: <span id="statusText">Disconnected</span>
+        </div>
+
+        <div>
+            <button id="connectBtn">Connect to SSE</button>
+            <button id="testToolsBtn" disabled>Test Tools</button>
+            <button id="clearBtn">Clear Log</button>
+        </div>
+
+        <h2>Activity Log</h2>
+        <div id="log" class="log"></div>
+    </div>
+
+    <script type="module">
+        let eventSource = null;
+        let sessionId = null;
+
+        const statusEl = document.getElementById('status');
+        const statusTextEl = document.getElementById('statusText');
+        const logEl = document.getElementById('log');
+        const connectBtn = document.getElementById('connectBtn');
+        const testToolsBtn = document.getElementById('testToolsBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function setStatus(status, text) {
+            statusEl.className = `status ${status}`;
+            statusTextEl.textContent = text;
+        }
+
+        async function sendMessage(message) {
+            if (!sessionId) {
+                log('No session ID available', 'error');
+                return null;
+            }
+
+            try {
+                const response = await fetch(`http://127.0.0.1:3000/messages?sessionId=${sessionId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(message)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                log(`Response: ${JSON.stringify(result, null, 2)}`, 'success');
+                return result;
+            } catch (error) {
+                log(`Error sending message: ${error.message}`, 'error');
+                return null;
+            }
+        }
+
+        async function initialize() {
+            log('Sending initialize request...');
+            const message = {
+                jsonrpc: '2.0',
+                id: 1,
+                method: 'initialize',
+                params: {
+                    protocolVersion: '2024-11-05',
+                    capabilities: {},
+                    clientInfo: {
+                        name: 'browser-test-client',
+                        version: '1.0.0'
+                    }
+                }
+            };
+
+            await sendMessage(message);
+        }
+
+        async function listTools() {
+            log('Requesting tool list...');
+            const message = {
+                jsonrpc: '2.0',
+                id: 2,
+                method: 'tools/list',
+                params: {}
+            };
+
+            await sendMessage(message);
+        }
+
+        async function testSequentialThinking() {
+            log('Testing sequential thinking tool...');
+
+            // First thought
+            await sendMessage({
+                jsonrpc: '2.0',
+                id: 3,
+                method: 'tools/call',
+                params: {
+                    name: 'sequentialthinking',
+                    arguments: {
+                        thought: 'Testing SSE transport from browser',
+                        nextThoughtNeeded: true,
+                        thoughtNumber: 1,
+                        totalThoughts: 3
+                    }
+                }
+            });
+
+            // Second thought
+            await sendMessage({
+                jsonrpc: '2.0',
+                id: 4,
+                method: 'tools/call',
+                params: {
+                    name: 'sequentialthinking',
+                    arguments: {
+                        thought: 'The connection seems stable and working',
+                        nextThoughtNeeded: true,
+                        thoughtNumber: 2,
+                        totalThoughts: 3
+                    }
+                }
+            });
+
+            // Final thought
+            await sendMessage({
+                jsonrpc: '2.0',
+                id: 5,
+                method: 'tools/call',
+                params: {
+                    name: 'sequentialthinking',
+                    arguments: {
+                        thought: 'Browser-based SSE test completed successfully',
+                        nextThoughtNeeded: false,
+                        thoughtNumber: 3,
+                        totalThoughts: 3
+                    }
+                }
+            });
+        }
+
+        connectBtn.addEventListener('click', () => {
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+                sessionId = null;
+                connectBtn.textContent = 'Connect to SSE';
+                testToolsBtn.disabled = true;
+                setStatus('disconnected', 'Disconnected');
+                log('Disconnected from SSE');
+                return;
+            }
+
+            log('Connecting to SSE endpoint...');
+            setStatus('connecting', 'Connecting...');
+
+            eventSource = new EventSource('http://127.0.0.1:3000/sse');
+
+            eventSource.onopen = async (event) => {
+                log('SSE connection opened', 'success');
+                setStatus('connected', 'Connected');
+                connectBtn.textContent = 'Disconnect';
+
+                // Extract session ID from the URL
+                const url = new URL(eventSource.url);
+                sessionId = url.searchParams.get('sessionId');
+                if (sessionId) {
+                    log(`Session ID: ${sessionId}`);
+                    testToolsBtn.disabled = false;
+
+                    // Initialize the connection
+                    await initialize();
+                }
+            };
+
+            eventSource.onmessage = (event) => {
+                log(`Message: ${event.data}`);
+                try {
+                    const data = JSON.parse(event.data);
+                    log(`Parsed: ${JSON.stringify(data, null, 2)}`);
+                } catch (e) {
+                    // Not JSON, just log as is
+                }
+            };
+
+            eventSource.onerror = (event) => {
+                log('SSE connection error', 'error');
+                if (eventSource.readyState === EventSource.CLOSED) {
+                    setStatus('disconnected', 'Connection closed');
+                    connectBtn.textContent = 'Connect to SSE';
+                    testToolsBtn.disabled = true;
+                } else {
+                    setStatus('connecting', 'Reconnecting...');
+                }
+            };
+
+            // Listen for specific event types
+            eventSource.addEventListener('endpoint', (event) => {
+                log(`Endpoint event: ${event.data}`);
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.endpoint) {
+                        // Update session ID if provided
+                        const url = new URL(data.endpoint, window.location.origin);
+                        const newSessionId = url.searchParams.get('sessionId');
+                        if (newSessionId) {
+                            sessionId = newSessionId;
+                            log(`Updated session ID: ${sessionId}`);
+                        }
+                    }
+                } catch (e) {
+                    log('Failed to parse endpoint data', 'error');
+                }
+            });
+        });
+
+        testToolsBtn.addEventListener('click', async () => {
+            testToolsBtn.disabled = true;
+
+            await listTools();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await testSequentialThinking();
+
+            testToolsBtn.disabled = false;
+        });
+
+        clearBtn.addEventListener('click', () => {
+            logEl.innerHTML = '';
+            log('Log cleared');
+        });
+
+        // Initial log
+        log('SSE MCP Test Client ready');
+    </script>
+</body>
+
+</html>

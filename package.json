@@ -1,0 +1,35 @@
+{
+  "name": "@camilovelezr/server-sequential-thinking",
+  "version": "0.6.2",
+  "description": "MCP server for sequential thinking and problem solving - Streamable HTTP Implementation",
+  "license": "MIT",
+  "author": "Anthropic, PBC (https://anthropic.com), Camilo Velez (https://github.com/camilovelezr)",
+  "homepage": "https://github.com/camilovelezr/server-sequential-thinking",
+  "bugs": "https://github.com/camilovelezr/server-sequential-thinking/issues",
+  "type": "module",
+  "bin": {
+    "mcp-server-sequential-thinking": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "test-sse-client.js"
+  ],
+  "scripts": {
+    "build": "tsc && shx chmod +x dist/*.js",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "start": "node dist/index.js",
+    "test-client": "node test-sse-client.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.13.3",
+    "chalk": "^5.4.1",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^22",
+    "shx": "^0.4.0",
+    "typescript": "^5.8.3"
+  }
+}
