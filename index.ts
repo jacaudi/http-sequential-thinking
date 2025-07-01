@@ -250,20 +250,35 @@ const __dirname = path.dirname(__filename);
 async function runServer() {
   const app = express();
   const port = parseInt(process.env.PORT || '3000', 10);
+  // Use 0.0.0.0 when running in Docker, otherwise use 127.0.0.1 for security
+  const host = process.env.DOCKER === 'true' ? '0.0.0.0' : '127.0.0.1';
+  
+  // Parse allowed origins from environment variable
+  const allowedOrigins = process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+    : ['http://localhost:3000', 'http://127.0.0.1:3000']; // Default for development
 
   // Enable CORS
   const corsMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, mcp-session-id');
-
-    // Security: Validate Origin header to prevent DNS rebinding attacks
     const origin = req.headers.origin;
-    if (origin && !['http://localhost:3000', 'http://127.0.0.1:3000'].includes(origin)) {
+    
+    // If origin is present and in allowed list, set specific origin
+    if (origin && allowedOrigins.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+      res.header('Access-Control-Allow-Credentials', 'true');
+    } else if (!origin && process.env.NODE_ENV === 'development') {
+      // Allow no-origin requests in development (e.g., direct API calls)
+      res.header('Access-Control-Allow-Origin', '*');
+    } else if (origin) {
+      // Reject requests from unauthorized origins
       console.error(`Rejected connection from unauthorized origin: ${origin}`);
-      res.status(403).send('Forbidden');
+      console.error(`Allowed origins: ${allowedOrigins.join(', ')}`);
+      res.status(403).json({ error: 'Origin not allowed' });
       return;
     }
+    
+    res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, mcp-session-id');
 
     if (req.method === 'OPTIONS') {
       res.sendStatus(200);
@@ -440,11 +455,15 @@ async function runServer() {
     }
   }, SESSION_CLEANUP_INTERVAL_MS);
 
-  // Start server on localhost only (security best practice)
-  app.listen(port, '127.0.0.1', () => {
-    console.error(`Sequential Thinking MCP Server (Streamable HTTP) running on http://127.0.0.1:${port}`);
-    console.error(`MCP endpoint: http://127.0.0.1:${port}/mcp`);
-    console.error(`Test interface: http://127.0.0.1:${port}/`);
+  // Start server on configured host
+  app.listen(port, host, () => {
+    console.error(`Sequential Thinking MCP Server (Streamable HTTP) running on http://${host}:${port}`);
+    console.error(`MCP endpoint: http://${host}:${port}/mcp`);
+    console.error(`Test interface: http://${host}:${port}/`);
+    if (process.env.DOCKER === 'true') {
+      console.error('Running in Docker mode - accessible from outside the container');
+    }
+    console.error(`Allowed origins: ${allowedOrigins.join(', ')}`);
   });
 }
 
