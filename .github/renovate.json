@@ -1,0 +1,35 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
+  "suppressNotifications": ["prIgnoreNotification"],
+  "timezone": "America/Los_Angeles",
+  "semanticCommits": "enabled",
+  "postUpdateOptions": ["npmDedupe"],
+  "packageRules": [
+    {
+      "matchDatasources": ["npm"],
+      "rangeStrategy": "bump"
+    },
+    {
+      "matchPackageNames": ["node"],
+      "matchDatasources": ["docker"],
+      "versioning": "node"
+    },
+    {
+      "matchPackageNames": ["@types/node"],
+      "allowedVersions": "< 23"
+    }
+  ],
+  "docker": {
+    "enabled": true,
+    "pinDigests": true
+  },
+  "github-actions": {
+    "enabled": true,
+    "pinDigests": true
+  }
+}

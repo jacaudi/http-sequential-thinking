@@ -12,7 +12,7 @@
   },
   "files": [
     "dist",
-    "test-sse-client.js"
+    "web"
   ],
   "scripts": {
     "build": "tsc && shx chmod +x dist/*.js",

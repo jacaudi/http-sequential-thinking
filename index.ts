@@ -340,9 +340,9 @@ async function runServer() {
     };
   });
 
-  // Serve the test page
+  // Serve the web interface
   app.get('/', (req: Request, res: Response): void => {
-    res.sendFile(path.join(__dirname, 'test-streamable-http.html'));
+    res.sendFile(path.join(__dirname, '..', 'web', 'index.html'));
   });
 
   app.post('/mcp', async (req: Request, res: Response) => {
