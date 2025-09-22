@@ -17,8 +17,8 @@ This server enables AI assistants to work through problems step-by-step, with th
 To get started with this server, clone the repository and install the necessary dependencies.
 
 ```bash
-git clone https://github.com/camilovelezr/server-sequential-thinking.git
-cd server-sequential-thinking
+git clone https://github.com/jacaudi/http-sequential-thinking.git
+cd http-sequential-thinking
 npm install
 ```
 
@@ -86,12 +86,12 @@ You can also run the server in a containerized environment using Docker for easi
 
 1.  **Build the Docker image:**
     ```bash
-    docker build -t mcp-server-sequential-thinking .
+    docker build -t http-sequential-thinking .
     ```
 
 2.  **Run the Docker container:**
     ```bash
-    docker run -p 3000:3000 mcp-server-sequential-thinking
+    docker run -p 3000:3000 http-sequential-thinking
     ```
 
 The server will be accessible at `http://127.0.0.1:3000`.

@@ -1,14 +1,14 @@
 {
-  "name": "@camilovelezr/server-sequential-thinking",
+  "name": "@jacaudi/http-sequential-thinking",
   "version": "0.6.2",
   "description": "MCP server for sequential thinking and problem solving - Streamable HTTP Implementation",
   "license": "MIT",
-  "author": "Anthropic, PBC (https://anthropic.com), Camilo Velez (https://github.com/camilovelezr)",
-  "homepage": "https://github.com/camilovelezr/server-sequential-thinking",
-  "bugs": "https://github.com/camilovelezr/server-sequential-thinking/issues",
+  "author": "Anthropic, PBC (https://anthropic.com), jacaudi (https://github.com/jacaudi)",
+  "homepage": "https://github.com/jacaudi/http-sequential-thinking",
+  "bugs": "https://github.com/jacaudi/http-sequential-thinking/issues",
   "type": "module",
   "bin": {
-    "mcp-server-sequential-thinking": "dist/index.js"
+    "http-sequential-thinking": "dist/index.js"
   },
   "files": [
     "dist",
@@ -19,7 +19,7 @@
     "prepare": "npm run build",
     "watch": "tsc --watch",
     "start": "node dist/index.js",
-    "test-client": "node test-sse-client.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.3",
