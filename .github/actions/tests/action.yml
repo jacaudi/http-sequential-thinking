@@ -1,0 +1,27 @@
+name: "Tests"
+description: "Run tests for the MCP server"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Run type check
+      shell: bash
+      run: npx tsc --noEmit
+
+    - name: Build project
+      shell: bash
+      run: npm run build
+
+    - name: Run tests
+      shell: bash
+      run: npm test --if-present
