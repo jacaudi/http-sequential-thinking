@@ -4,6 +4,8 @@
     "streamable",
     "sequentialthinking",
     "onsessioninitialized",
-    "ghcr"
+    "ghcr",
+    "opencontainers",
+    "buildx"
   ]
 }
