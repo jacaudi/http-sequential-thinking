@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.3",
-    "chalk": "^5.4.1",
+    "chalk": "^5.6.2",
     "express": "^5.1.0"
   },
   "devDependencies": {
