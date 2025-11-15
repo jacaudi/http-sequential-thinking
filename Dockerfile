@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/node:24-alpine AS builder
+FROM public.ecr.aws/docker/library/node:24-alpine@sha256:2867d550cf9d8bb50059a0fff528741f11a84d985c732e60e19e8e75c7239c43 AS builder
 
 # Set build arguments
 ARG VERSION=dev
@@ -23,7 +23,7 @@ COPY . .
 RUN npm run build
 
 # Use a smaller base image for the release
-FROM public.ecr.aws/docker/library/node:24-alpine AS release
+FROM public.ecr.aws/docker/library/node:24-alpine@sha256:2867d550cf9d8bb50059a0fff528741f11a84d985c732e60e19e8e75c7239c43 AS release
 
 # Install ca-certificates for HTTPS requests
 RUN apk add --no-cache ca-certificates
