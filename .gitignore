@@ -4,3 +4,5 @@ dist
 *.DS_Store
 .cursorrules
 .clinerules
+.claude
+.private-journal/

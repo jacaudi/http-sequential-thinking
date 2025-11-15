@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended"
   ],
+  "includeForks": true,
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
   "suppressNotifications": ["prIgnoreNotification"],
