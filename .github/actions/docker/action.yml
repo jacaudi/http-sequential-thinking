@@ -45,7 +45,7 @@ runs:
           type=semver,pattern={{major}}.{{minor}}
 
     - name: Build and push with docker bake
-      uses: docker/bake-action@4a9a8d494466d37134e2bfca2d3a8de8fb2681ad # v5
+      uses: docker/bake-action@3acf805d94d93a86cce4ca44798a76464a75b88c # v6
       env:
         BUILD_DATE: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
         REGISTRY_IMAGE: ghcr.io/${{ github.repository }}
